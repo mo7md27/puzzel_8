@@ -33,7 +33,6 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   }
 
   void solvePuzzle() {
-    // Set tiles to solved order
     tiles = [
       [1, 2, 3],
       [4, 5, 6],
@@ -101,10 +100,21 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('8-Puzzle Game', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.deepPurple,
-        elevation: 10,
+        title: const Text(
+          '8-Puzzle Game',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+        ),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.deepPurple, Colors.purpleAccent],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         centerTitle: true,
+        elevation: 10,
       ),
       body: Column(
         children: [
@@ -120,13 +130,21 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                   int col = index % 3;
                   return GestureDetector(
                     onTap: () => onTileTap(row, col),
-                    child: Container(
-                      margin: const EdgeInsets.all(6),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: tiles[row][col] == 0
                             ? Colors.grey.shade300
                             : Colors.deepPurpleAccent,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(15),
+                        gradient: tiles[row][col] != 0
+                            ? const LinearGradient(
+                                colors: [Colors.purple, Colors.deepPurple],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              )
+                            : null,
                         boxShadow: [
                           if (tiles[row][col] != 0)
                             const BoxShadow(
@@ -163,7 +181,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                     backgroundColor: Colors.deepPurple,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     elevation: 5,
                   ),
@@ -178,7 +196,7 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
                     padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                     backgroundColor: Colors.green,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                     elevation: 5,
                   ),
