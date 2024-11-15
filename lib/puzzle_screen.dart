@@ -55,8 +55,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
   }
 
   void onTileTap(int row, int col) {
+    // تحديد موقع البلاطة الفارغة (0)
     int emptyRow = -1, emptyCol = -1;
-
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
         if (tiles[i][j] == 0) {
@@ -67,13 +67,16 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       }
     }
 
+    // التحقق من إمكانية التحريك (إذا كانت البلاطة بجانب البلاطة الفارغة)
     if ((row == emptyRow && (col - emptyCol).abs() == 1) ||
         (col == emptyCol && (row - emptyRow).abs() == 1)) {
+      // تبديل البلاطتين
       setState(() {
         tiles[emptyRow][emptyCol] = tiles[row][col];
         tiles[row][col] = 0;
       });
 
+      // عرض رسالة تهنئة إذا تم حل اللغز
       if (isSolved()) {
         showDialog(
           context: context,
