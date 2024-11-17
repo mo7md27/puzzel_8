@@ -1,15 +1,22 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 
 class PuzzleScreen extends StatefulWidget {
   const PuzzleScreen({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _PuzzleScreenState createState() => _PuzzleScreenState();
 }
 
 class _PuzzleScreenState extends State<PuzzleScreen> {
   List<List<int>> tiles = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 0]
+  ];
+
+  final List<List<int>> targetState = [
     [1, 2, 3],
     [4, 5, 6],
     [7, 8, 0]
@@ -32,30 +39,105 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
     setState(() {});
   }
 
-  void solvePuzzle() {
-    tiles = [
-      [1, 2, 3],
-      [4, 5, 6],
-      [7, 8, 0]
+  void solvePuzzle() async {
+    List<List<List<int>>> solution = await bfsSolve(tiles);
+    for (var state in solution) {
+      if (!mounted) return; // check if the widget is still mounted
+      await Future.delayed(const Duration(milliseconds: 200));
+      setState(() {
+        tiles = state;
+      });
+    }
+  }
+
+  Future<List<List<List<int>>>> bfsSolve(List<List<int>> initial) async {
+    Queue<List<List<int>>> queue = Queue();
+    Set<String> visited = {};
+    Map<String, List<List<int>>?> parent = {};
+
+    queue.add(initial);
+    visited.add(initial.toString());
+    parent[initial.toString()] = null;
+
+    while (queue.isNotEmpty) {
+      var current = queue.removeFirst();
+
+      if (current.toString() == targetState.toString()) {
+        return constructPath(parent, current);
+      }
+
+      for (var neighbor in getNeighbors(current)) {
+        if (!visited.contains(neighbor.toString())) {
+          queue.add(neighbor);
+          visited.add(neighbor.toString());
+          parent[neighbor.toString()] = current;
+        }
+      }
+    }
+
+    return [];
+  }
+
+  List<List<List<int>>> constructPath(
+      Map<String, List<List<int>>?> parent, List<List<int>> target) {
+    List<List<List<int>>> path = [];
+    List<List<int>>? current = target;
+
+    while (current != null) {
+      path.add(current);
+      current = parent[current.toString()];
+    }
+
+    return path.reversed.toList();
+  }
+
+  List<List<List<int>>> getNeighbors(List<List<int>> state) {
+    List<List<List<int>>> neighbors = [];
+    int emptyRow = -1, emptyCol = -1;
+
+    // Find the position of the empty tile (0)
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 3; col++) {
+        if (state[row][col] == 0) {
+          emptyRow = row;
+          emptyCol = col;
+          break;
+        }
+      }
+    }
+
+    // Possible moves: up, down, left, right
+    List<List<int>> directions = [
+      [-1, 0], // Up
+      [1, 0],  // Down
+      [0, -1], // Left
+      [0, 1]   // Right
     ];
-    setState(() {});
+
+    for (var dir in directions) {
+      int newRow = emptyRow + dir[0];
+      int newCol = emptyCol + dir[1];
+
+      if (newRow >= 0 && newRow < 3 && newCol >= 0 && newCol < 3) {
+        List<List<int>> newState = copyState(state);
+        newState[emptyRow][emptyCol] = newState[newRow][newCol];
+        newState[newRow][newCol] = 0;
+        neighbors.add(newState);
+      }
+    }
+
+    return neighbors;
+  }
+
+  List<List<int>> copyState(List<List<int>> state) {
+    return state.map((row) => List<int>.from(row)).toList();
   }
 
   bool isSolved() {
-    List<int> orderedList = List.generate(9, (index) => index + 1);
-    orderedList[8] = 0;
-    int k = 0;
-    for (var row = 0; row < 3; row++) {
-      for (var col = 0; col < 3; col++) {
-        if (tiles[row][col] != orderedList[k]) return false;
-        k++;
-      }
-    }
-    return true;
+    return tiles.toString() == targetState.toString();
   }
 
   void onTileTap(int row, int col) {
-    // تحديد موقع البلاطة الفارغة (0)
     int emptyRow = -1, emptyCol = -1;
     for (int i = 0; i < 3; i++) {
       for (int j = 0; j < 3; j++) {
@@ -67,16 +149,13 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
       }
     }
 
-    // التحقق من إمكانية التحريك (إذا كانت البلاطة بجانب البلاطة الفارغة)
     if ((row == emptyRow && (col - emptyCol).abs() == 1) ||
         (col == emptyCol && (row - emptyRow).abs() == 1)) {
-      // تبديل البلاطتين
       setState(() {
         tiles[emptyRow][emptyCol] = tiles[row][col];
         tiles[row][col] = 0;
       });
 
-      // عرض رسالة تهنئة إذا تم حل اللغز
       if (isSolved()) {
         showDialog(
           context: context,
@@ -125,8 +204,8 @@ class _PuzzleScreenState extends State<PuzzleScreen> {
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: GridView.builder(
-                gridDelegate:
-                    const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3),
                 itemCount: 9,
                 itemBuilder: (context, index) {
                   int row = index ~/ 3;
