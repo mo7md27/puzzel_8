@@ -1,16 +1,49 @@
-# puzzel_8
+🧩 8 Puzzle Game – Flutter + AI (DFS Solver)
+🎯 Project Objective
+To build an interactive 8-puzzle game where users can:
 
-A new Flutter project.
+- Shuffle the tiles to create a new challenge
+- Manually solve the puzzle
+- Let the AI solve the puzzle using DFS (Depth-First Search)
+🧠 Features
+- 🌀 Randomized puzzle shuffling
+- 🧮 Solving mechanism using Depth-First Search
+- 🕹️ Interactive tile movement
+- 🎯 Goal: Arrange tiles from 1 to 8, leaving the bottom-right tile empty
+- 🚫 Detects and prevents unsolvable configurations (optional)
+🚀 Getting Started
+Requirements
+- Flutter SDK (latest stable version)
+- Dart SDK
+- Android Studio or VS Code
+- Emulator or physical device
+Installation
+1. Clone the repo:
+git clone https://github.com/your-username/puzzel_8.git
+cd puzzel_8
+2. Install dependencies:
+flutter pub get
+3. Run the app:
+flutter run
+📂 Project Structure
+lib/
+├── models/
+│   └── puzzle_state.dart       # Puzzle board state model
+├── services/
+│   └── dfs_solver.dart         # Depth-First Search logic
+├── views/
+│   └── home_screen.dart        # Game UI screen
+├── widgets/
+│   └── tile_widget.dart        # UI widget for puzzle tile
+└── main.dart                   # App entry point
+📸 Screenshots
+You can insert screenshots or GIFs here of the gameplay and AI solver in action.
+📌 Future Improvements
+- [ ] Add more solving algorithms (e.g., A*, BFS)
+- [ ] Add solving animation
+- [ ] Count steps and display solving time
+- [ ] Detect unsolvable states automatically
+📄 License
+This project is licensed under the MIT License. See the LICENSE file for more information.
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Developed with 💡 and 🧠 using Flutter and AI
